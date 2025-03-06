@@ -6,7 +6,6 @@ export default function Terrain(props) {
   return (
     <group {...props} dispose={null}>
       <mesh
-        castShadow
         receiveShadow
         geometry={nodes.Cube.geometry}
         material={materials.Material}
