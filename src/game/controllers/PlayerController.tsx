@@ -4,10 +4,11 @@ import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 import { useKeyboardControls } from "@react-three/drei";
 import { Vector3 } from "three";
+import Controls from "../utils/controls";
 
 export default function PlayerController() {
-  const rb = useRef();
-  const [, get] = useKeyboardControls();
+  const rb = useRef<any>(null);
+  const [, get] = useKeyboardControls<Controls>();
   const movementSpeed = 10;
   const vel = new Vector3();
 
@@ -17,6 +18,8 @@ export default function PlayerController() {
     vel.z = 0;
 
     const { forward, back, left, right } = get();
+
+    const player = rb.current;
 
     if (rb.current) {
       if (forward) {
@@ -33,7 +36,7 @@ export default function PlayerController() {
         vel.x = 1 * movementSpeed;
       }
 
-      rb.current.setLinvel(vel);
+      player.setLinvel(vel);
     }
   });
 
