@@ -7,6 +7,7 @@ import { Group, Vector3 } from "three";
 import Controls from "../utils/controls";
 import { useControls } from "leva";
 import { degToRad, MathUtils } from "three/src/math/MathUtils.js";
+import { lerpAngle } from "../utils/AngleHelpers";
 
 type Props = {
   gameover: boolean;
@@ -111,7 +112,7 @@ export default function PlayerController(props: Props) {
           Math.cos(rotationTarget.current + CharacterrotationTarget.current) *
           speed;
       }
-      character.current!.rotation.y = MathUtils.lerp(
+      character.current!.rotation.y = lerpAngle(
         character.current!.rotation.y,
         CharacterrotationTarget.current,
         0.1
