@@ -1,4 +1,4 @@
-import TerrainController from "./controllers/TerrainController";
+import World from "./World";
 import { Canvas } from "@react-three/fiber";
 import PlayerController from "./controllers/PlayerController";
 import { Suspense } from "react";
@@ -9,9 +9,8 @@ export default function Experience() {
   return (
     <Canvas
       className="scene"
-      camera={{ position: [0, 16, 16] }}
+      camera={{ position: [0, 16, -20] }}
       shadows="basic"
-      //   orthographic
     >
       <ambientLight intensity={0.5} />
       <directionalLight intensity={1} position={[-10, 10, 2]} castShadow />
@@ -19,7 +18,7 @@ export default function Experience() {
 
       <Suspense fallback={null}>
         <Physics debug>
-          <TerrainController />
+          <World />
           <PlayerController />
           <BottomController />
         </Physics>
