@@ -38,6 +38,7 @@ export default function PlayerController(props: Props) {
   const character = useRef<Group>(null);
   const cameraTarget = useRef<Group>(null);
   const cameraPosition = useRef<Group>(null);
+  const CharacterrotationTarget = useRef<number>(0);
   const rotationTarget = useRef<number>(0);
   const cameraWorldPosition = useRef<Vector3>(new Vector3());
   const cameraLookAtWorldPosition = useRef<Vector3>(new Vector3());
@@ -69,7 +70,9 @@ export default function PlayerController(props: Props) {
       camera.lookAt(cameraLookAt.current);
     }
 
-    // Move player
+    /**
+     * Handling the Player Movement
+     */
     if (rb.current && !gameover) {
       const vel = rb.current.linvel();
 
@@ -100,9 +103,19 @@ export default function PlayerController(props: Props) {
 
       // apply the movement
       if (movement.x !== 0 || movement.z !== 0) {
-        vel.x = Math.sin(rotationTarget.current) * speed;
-        vel.z = Math.cos(rotationTarget.current) * speed;
+        CharacterrotationTarget.current = Math.atan2(movement.x, movement.z);
+        vel.x =
+          Math.sin(rotationTarget.current + CharacterrotationTarget.current) *
+          speed;
+        vel.z =
+          Math.cos(rotationTarget.current + CharacterrotationTarget.current) *
+          speed;
       }
+      character.current!.rotation.y = MathUtils.lerp(
+        character.current!.rotation.y,
+        CharacterrotationTarget.current,
+        0.1
+      );
       rb.current.setLinvel(vel, true);
     }
   });
