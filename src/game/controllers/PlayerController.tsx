@@ -1,5 +1,8 @@
-import { CapsuleCollider, RigidBody } from "@react-three/rapier";
-import Player from "../models/Player";
+import {
+  CapsuleCollider,
+  RigidBody,
+  RigidBodyProps,
+} from "@react-three/rapier";
 import { useFrame } from "@react-three/fiber";
 import { useRef, useState } from "react";
 import { useKeyboardControls } from "@react-three/drei";
@@ -34,8 +37,9 @@ export default function PlayerController(props: Props) {
     }
   );
 
-  let gameover: boolean = props.gameover;
+  const gameover: boolean = props.gameover;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const rb = useRef<any>(null);
   const container = useRef<Group>(null);
   const character = useRef<Group>(null);
@@ -91,7 +95,7 @@ export default function PlayerController(props: Props) {
         movement.z = -1;
       }
 
-      let speed = run ? RUN_SPEED : WALK_SPEED;
+      const speed = run ? RUN_SPEED : WALK_SPEED;
 
       if (left) {
         movement.x = 1;
@@ -134,7 +138,7 @@ export default function PlayerController(props: Props) {
     <RigidBody ref={rb} colliders={false} position={[0, 2.4, 0]} lockRotations>
       <group ref={container}>
         <group ref={cameraTarget} position-z={-4} />
-        <group ref={cameraPosition} position-y={16} position-z={-20} />
+        <group ref={cameraPosition} position-y={10} position-z={-16} />
         <group ref={character}>
           <Character state={state} />
         </group>

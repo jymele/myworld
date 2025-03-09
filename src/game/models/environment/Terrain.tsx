@@ -9,11 +9,9 @@ import { GLTF } from "three-stdlib";
 
 type GLTFResult = GLTF & {
   nodes: {
-    Cube_1: THREE.Mesh;
-    Cube_2: THREE.Mesh;
+    Cube005: THREE.Mesh;
   };
   materials: {
-    Material: THREE.MeshStandardMaterial;
     ["Material.001"]: THREE.MeshStandardMaterial;
   };
 };
@@ -23,15 +21,8 @@ export default function Terrain(props: JSX.IntrinsicElements["group"]) {
   return (
     <group {...props} dispose={null}>
       <mesh
-        castShadow
         receiveShadow
-        geometry={nodes.Cube_1.geometry}
-        material={materials.Material}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes.Cube_2.geometry}
+        geometry={nodes.Cube005.geometry}
         material={materials["Material.001"]}
       />
     </group>
