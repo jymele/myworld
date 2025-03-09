@@ -8,6 +8,7 @@ import Controls from "../utils/controls";
 import { useControls } from "leva";
 import { degToRad, MathUtils } from "three/src/math/MathUtils.js";
 import { lerpAngle } from "../utils/AngleHelpers";
+import { Character } from "../models/Character";
 
 type Props = {
   gameover: boolean;
@@ -127,7 +128,8 @@ export default function PlayerController(props: Props) {
         <group ref={cameraTarget} position-z={-4} />
         <group ref={cameraPosition} position-y={16} position-z={-20} />
         <group ref={character}>
-          <Player />
+          {/* <Player /> */}
+          <Character />
         </group>
       </group>
       <CapsuleCollider args={[1, 1.05]} />
