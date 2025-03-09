@@ -31,14 +31,17 @@ export function Character(props: Props) {
   const { state } = props;
 
   useEffect(() => {
-    if (state === "Idle") {
-      console.log("Idle");
-      actions.Walk!.stop();
-      actions.Idle!.play();
-    } else if (state === "Walk") {
-      console.log("Walk");
-      actions.Idle!.stop();
-      actions.Walk!.play().setDuration(0.5);
+    // Check if all animations are present
+    if (!actions.Idle || !actions.Walk) {
+      console.error("Missing animations");
+    } else {
+      if (state === "Idle") {
+        actions.Walk.stop();
+        actions.Idle.play();
+      } else if (state === "Walk") {
+        actions.Idle.stop();
+        actions.Walk.play().setDuration(0.5);
+      }
     }
   }, [state]);
 
