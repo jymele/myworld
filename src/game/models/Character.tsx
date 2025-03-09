@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import React, { useRef, JSX, useEffect } from "react";
+import { useRef, JSX, useEffect } from "react";
 import { useGLTF, useAnimations } from "@react-three/drei";
 import { GLTF } from "three-stdlib";
 
@@ -20,19 +20,27 @@ type GLTFResult = GLTF & {
   };
 };
 
-// type ActionName = "Idle";
-// type GLTFActions = Record<ActionName, THREE.AnimationAction>;
+type Props = JSX.IntrinsicElements["group"] & {
+  state: "Idle" | "Walk";
+};
 
-export function Character(props: JSX.IntrinsicElements["group"]) {
+export function Character(props: Props) {
   const group = useRef<THREE.Group>(null);
   const { nodes, materials, animations } = useGLTF(
     "/character.glb"
   ) as unknown as GLTFResult;
   const { actions } = useAnimations<THREE.AnimationClip>(animations, group);
+  const { state } = props;
 
   useEffect(() => {
-    actions.Idle!.play();
-  }, []);
+    if (state === "Idle") {
+      console.log("Idle");
+      actions.Idle!.play();
+    } else if (state === "Walk") {
+      console.log("Walk");
+      actions.Walk!.play().setDuration(0.5);
+    }
+  }, [state]);
 
   return (
     <group ref={group} {...props} position-y={-1.6} castShadow dispose={null}>

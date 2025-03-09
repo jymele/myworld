@@ -1,7 +1,7 @@
 import { CapsuleCollider, RigidBody } from "@react-three/rapier";
 import Player from "../models/Player";
 import { useFrame } from "@react-three/fiber";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useKeyboardControls } from "@react-three/drei";
 import { Group, Vector3 } from "three";
 import Controls from "../utils/controls";
@@ -19,6 +19,7 @@ PlayerController.defaultProps = {
 };
 
 export default function PlayerController(props: Props) {
+  const [state, setState] = useState<"Idle" | "Walk">("Idle");
   const { WALK_SPEED, RUN_SPEED, ROTATION_SPEED } = useControls(
     "Character Control",
     {
@@ -128,8 +129,7 @@ export default function PlayerController(props: Props) {
         <group ref={cameraTarget} position-z={-4} />
         <group ref={cameraPosition} position-y={16} position-z={-20} />
         <group ref={character}>
-          {/* <Player /> */}
-          <Character />
+          <Character state={state} />
         </group>
       </group>
       <CapsuleCollider args={[1, 1.05]} />
