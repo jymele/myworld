@@ -100,6 +100,13 @@ export default function PlayerController(props: Props) {
         movement.x = -1;
       }
 
+      // set the state of the player for handling the animations
+      if (movement.x !== 0 || movement.z !== 0) {
+        setState("Walk");
+      } else {
+        setState("Idle");
+      }
+
       if (movement.x !== 0) {
         rotationTarget.current += movement.x * ROTATION_SPEED;
       }

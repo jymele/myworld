@@ -35,9 +35,11 @@ export function Character(props: Props) {
   useEffect(() => {
     if (state === "Idle") {
       console.log("Idle");
+      actions.Walk!.stop();
       actions.Idle!.play();
     } else if (state === "Walk") {
       console.log("Walk");
+      actions.Idle!.stop();
       actions.Walk!.play().setDuration(0.5);
     }
   }, [state]);
