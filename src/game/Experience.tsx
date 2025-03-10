@@ -12,14 +12,12 @@ export default function Experience() {
       className="scene"
       camera={{ position: [0, 10, -16], fov: 75 }}
       shadows
-      dpr={[1, 2]} // Adjust the resolution here
     >
       <Lighting />
       <Suspense fallback={null}>
         <Physics debug>
           <World />
           <PlayerController />
-          {/* <BottomController /> */}
         </Physics>
       </Suspense>
     </Canvas>

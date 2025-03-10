@@ -19,7 +19,7 @@ PlayerController.defaultProps = {
 
 export default function PlayerController(props: Props) {
   const [state, setState] = useState<"Idle" | "Walk">("Idle");
-  const { WALK_SPEED, RUN_SPEED, ROTATION_SPEED } = useControls(
+  const { WALK_SPEED, RUN_SPEED, ROTATION_SPEED, JUMP_FORCE } = useControls(
     "Character Control",
     {
       WALK_SPEED: { value: 10, min: 0, max: 100 },
@@ -30,10 +30,12 @@ export default function PlayerController(props: Props) {
         max: degToRad(5),
         step: degToRad(0.1),
       },
+      JUMP_FORCE: { value: 8, min: 0, max: 10, step: 0.5 },
     }
   );
 
   const gameover: boolean = props.gameover;
+  const inTheAir = useRef(false);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const rb = useRef<any>(null);
@@ -111,7 +113,7 @@ export default function PlayerController(props: Props) {
         rotationTarget.current += movement.x * ROTATION_SPEED;
       }
 
-      // apply the movement
+      // handle the movement
       if (movement.x !== 0 || movement.z !== 0) {
         CharacterrotationTarget.current = Math.atan2(movement.x, movement.z);
         vel.x =
@@ -126,14 +128,22 @@ export default function PlayerController(props: Props) {
         CharacterrotationTarget.current,
         0.1
       );
-      rb.current.setLinvel(vel, true);
 
-      /**
-       * Handling the Jump
-       */
-      if (jump) {
-        // rb.current.applyImpulse([0, 2, 0], true);
+      // Handle the Jump
+      if (jump && !inTheAir.current) {
+        inTheAir.current = true;
+        vel.y = JUMP_FORCE;
       }
+
+      // Check if the character collides with the terrain
+      // console.log(rb.current);
+      // const contacts = rb.current.contacts();
+      // inTheAir.current = !contacts.some(
+      //   (contact: any) => contact.colliderObject.name === "terrain"
+      // );
+
+      // Apply the movement and the jump
+      rb.current.setLinvel(vel, true);
     }
   });
 
