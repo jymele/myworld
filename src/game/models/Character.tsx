@@ -46,7 +46,7 @@ export function Character(props: Props) {
   }, [state]);
 
   return (
-    <group ref={group} {...props} position-y={-1.6} castShadow dispose={null}>
+    <group ref={group} {...props} position-y={-2} castShadow dispose={null}>
       <group name="Set_Armature">
         <group name="Armature001">
           <skinnedMesh
@@ -54,6 +54,8 @@ export function Character(props: Props) {
             geometry={nodes.Cube004.geometry}
             material={materials.Material}
             skeleton={nodes.Cube004.skeleton}
+            castShadow
+            receiveShadow
           />
           <primitive object={nodes.Bone_1} />
           <primitive object={nodes.Bone002_1} />
