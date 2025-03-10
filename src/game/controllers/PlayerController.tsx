@@ -1,8 +1,4 @@
-import {
-  CapsuleCollider,
-  RigidBody,
-  RigidBodyProps,
-} from "@react-three/rapier";
+import { CapsuleCollider, RigidBody } from "@react-three/rapier";
 import { useFrame } from "@react-three/fiber";
 import { useRef, useState } from "react";
 import { useKeyboardControls } from "@react-three/drei";
@@ -131,6 +127,13 @@ export default function PlayerController(props: Props) {
         0.1
       );
       rb.current.setLinvel(vel, true);
+
+      /**
+       * Handling the Jump
+       */
+      if (jump) {
+        // rb.current.applyImpulse([0, 2, 0], true);
+      }
     }
   });
 
