@@ -46,7 +46,7 @@ export function Character(props: Props) {
   }, [state]);
 
   return (
-    <group ref={group} {...props} position-y={-2} castShadow dispose={null}>
+    <group ref={group} {...props} position-y={-1.8} castShadow dispose={null}>
       <group name="Set_Armature">
         <group name="Armature001">
           <skinnedMesh

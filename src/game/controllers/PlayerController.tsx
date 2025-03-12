@@ -1,6 +1,6 @@
-import { CapsuleCollider, RigidBody } from "@react-three/rapier";
+import { CapsuleCollider, RigidBody, useRapier } from "@react-three/rapier";
 import { useFrame } from "@react-three/fiber";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useKeyboardControls } from "@react-three/drei";
 import { Group, Vector3 } from "three";
 import Controls from "../utils/controls";
@@ -8,6 +8,7 @@ import { useControls } from "leva";
 import { degToRad, MathUtils } from "three/src/math/MathUtils.js";
 import { lerpAngle } from "../utils/AngleHelpers";
 import { Character } from "../models/Character";
+import { PerspectiveCamera } from "three";
 
 type Props = {
   gameover: boolean;
@@ -19,6 +20,7 @@ PlayerController.defaultProps = {
 
 export default function PlayerController(props: Props) {
   const [state, setState] = useState<"Idle" | "Walk">("Idle");
+
   const { WALK_SPEED, RUN_SPEED, ROTATION_SPEED, JUMP_FORCE } = useControls(
     "Character Control",
     {
@@ -51,9 +53,72 @@ export default function PlayerController(props: Props) {
 
   const [, get] = useKeyboardControls<Controls>();
 
-  useFrame(({ camera }) => {
-    const { forward, back, left, right, run, jump } = get();
+  // useEffect(() => {
+  //   console.log(inTheAir.current);
+  // }, [inTheAir.current]);
 
+  const handleJump = (vel: Vector3) => {
+    const { jump } = get();
+    // Handle the Jump
+    // if (jump) {
+    if (jump && !inTheAir.current) {
+      inTheAir.current = true;
+      vel.y = JUMP_FORCE;
+    }
+  };
+
+  const handleMovement = (vel: Vector3) => {
+    const { forward, back, left, right, run } = get();
+
+    const speed = run ? RUN_SPEED : WALK_SPEED;
+    const movement = {
+      x: 0,
+      z: 0,
+    };
+
+    if (forward) {
+      movement.z = 1;
+    }
+    if (back) {
+      movement.z = -1;
+    }
+
+    if (left) {
+      movement.x = 1;
+    }
+    if (right) {
+      movement.x = -1;
+    }
+
+    // set the state of the player for handling the animations
+    if (movement.x !== 0 || movement.z !== 0) {
+      setState("Walk");
+    } else {
+      setState("Idle");
+    }
+
+    if (movement.x !== 0) {
+      rotationTarget.current += movement.x * ROTATION_SPEED;
+    }
+
+    // handle the movement
+    if (movement.x !== 0 || movement.z !== 0) {
+      CharacterrotationTarget.current = Math.atan2(movement.x, movement.z);
+      vel.x =
+        Math.sin(rotationTarget.current + CharacterrotationTarget.current) *
+        speed;
+      vel.z =
+        Math.cos(rotationTarget.current + CharacterrotationTarget.current) *
+        speed;
+    }
+    character.current!.rotation.y = lerpAngle(
+      character.current!.rotation.y,
+      CharacterrotationTarget.current,
+      0.1
+    );
+  };
+
+  const handleCamera = (camera: PerspectiveCamera) => {
     /**
      * Handling the Camera
      * */
@@ -74,6 +139,10 @@ export default function PlayerController(props: Props) {
 
       camera.lookAt(cameraLookAt.current);
     }
+  };
+
+  useFrame(({ camera }) => {
+    handleCamera(camera as PerspectiveCamera);
 
     /**
      * Handling the Player Movement
@@ -81,66 +150,8 @@ export default function PlayerController(props: Props) {
     if (rb.current && !gameover) {
       const vel = rb.current.linvel();
 
-      const movement = {
-        x: 0,
-        z: 0,
-      };
-
-      if (forward) {
-        movement.z = 1;
-      }
-      if (back) {
-        movement.z = -1;
-      }
-
-      const speed = run ? RUN_SPEED : WALK_SPEED;
-
-      if (left) {
-        movement.x = 1;
-      }
-      if (right) {
-        movement.x = -1;
-      }
-
-      // set the state of the player for handling the animations
-      if (movement.x !== 0 || movement.z !== 0) {
-        setState("Walk");
-      } else {
-        setState("Idle");
-      }
-
-      if (movement.x !== 0) {
-        rotationTarget.current += movement.x * ROTATION_SPEED;
-      }
-
-      // handle the movement
-      if (movement.x !== 0 || movement.z !== 0) {
-        CharacterrotationTarget.current = Math.atan2(movement.x, movement.z);
-        vel.x =
-          Math.sin(rotationTarget.current + CharacterrotationTarget.current) *
-          speed;
-        vel.z =
-          Math.cos(rotationTarget.current + CharacterrotationTarget.current) *
-          speed;
-      }
-      character.current!.rotation.y = lerpAngle(
-        character.current!.rotation.y,
-        CharacterrotationTarget.current,
-        0.1
-      );
-
-      // Handle the Jump
-      if (jump && !inTheAir.current) {
-        inTheAir.current = true;
-        vel.y = JUMP_FORCE;
-      }
-
-      // Check if the character collides with the terrain
-      // console.log(rb.current);
-      // const contacts = rb.current.contacts();
-      // inTheAir.current = !contacts.some(
-      //   (contact: any) => contact.colliderObject.name === "terrain"
-      // );
+      handleMovement(vel);
+      handleJump(vel);
 
       // Apply the movement and the jump
       rb.current.setLinvel(vel, true);
@@ -148,7 +159,13 @@ export default function PlayerController(props: Props) {
   });
 
   return (
-    <RigidBody ref={rb} colliders={false} position={[0, 2.4, 0]} lockRotations>
+    <RigidBody
+      ref={rb}
+      colliders={false}
+      position={[0, 5, 0]}
+      lockRotations
+      // collisionGroups={0b0001}
+    >
       <group ref={container}>
         <group ref={cameraTarget} position-z={-4} />
         <group ref={cameraPosition} position-y={10} position-z={-16} />
