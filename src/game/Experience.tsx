@@ -10,7 +10,7 @@ export default function Experience() {
   return (
     <Canvas
       className="scene"
-      camera={{ position: [0, 10, -16], fov: 75 }}
+      camera={{ position: [0, 14, -24], fov: 45 }}
       shadows
     >
       <Lighting />

@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { useRef, JSX, useEffect } from "react";
 import { useGLTF, useAnimations } from "@react-three/drei";
 import { GLTF } from "three-stdlib";
+import { PlayerActions } from "../utils/playerActions";
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -19,7 +20,7 @@ type GLTFResult = GLTF & {
 };
 
 type Props = JSX.IntrinsicElements["group"] & {
-  state: "Idle" | "Walk";
+  state: PlayerActions;
 };
 
 export function Character(props: Props) {

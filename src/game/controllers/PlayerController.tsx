@@ -1,4 +1,8 @@
-import { CapsuleCollider, RigidBody } from "@react-three/rapier";
+import {
+  CapsuleCollider,
+  RigidBody,
+  RapierRigidBody,
+} from "@react-three/rapier";
 import { useFrame } from "@react-three/fiber";
 import { useRef, useState } from "react";
 import { useKeyboardControls } from "@react-three/drei";
@@ -9,6 +13,7 @@ import { degToRad, MathUtils } from "three/src/math/MathUtils.js";
 import { lerpAngle } from "../utils/AngleHelpers";
 import { Character } from "../models/Character";
 import { PerspectiveCamera } from "three";
+import { PlayerActions } from "../utils/playerActions";
 
 type Props = {
   gameover: boolean;
@@ -19,7 +24,7 @@ PlayerController.defaultProps = {
 };
 
 export default function PlayerController(props: Props) {
-  const [state, setState] = useState<"Idle" | "Walk">("Idle");
+  const [state, setState] = useState<PlayerActions>("Idle");
 
   const { WALK_SPEED, RUN_SPEED, ROTATION_SPEED, JUMP_FORCE } = useControls(
     "Character Control",
@@ -39,8 +44,7 @@ export default function PlayerController(props: Props) {
   const gameover: boolean = props.gameover;
   const inTheAir = useRef(false);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const rb = useRef<any>(null);
+  const rb = useRef<RapierRigidBody>(null);
   const container = useRef<Group>(null);
   const character = useRef<Group>(null);
   const cameraTarget = useRef<Group>(null);
@@ -59,6 +63,7 @@ export default function PlayerController(props: Props) {
     if (jump && !inTheAir.current) {
       inTheAir.current = true;
       vel.y = JUMP_FORCE;
+      setState("Jump");
     }
   };
 
@@ -143,7 +148,7 @@ export default function PlayerController(props: Props) {
      * Handling the Player Movement
      */
     if (rb.current && !gameover && !inTheAir.current) {
-      const vel = rb.current.linvel();
+      const vel = rb.current.linvel() as Vector3;
 
       handleMovement(vel);
       handleJump(vel);
@@ -156,6 +161,7 @@ export default function PlayerController(props: Props) {
   return (
     <RigidBody
       ref={rb}
+      name="player"
       colliders={false}
       position={[0, 5, 0]}
       lockRotations
@@ -164,10 +170,15 @@ export default function PlayerController(props: Props) {
           inTheAir.current = false;
         }
       }}
+      onCollisionExit={({ other }) => {
+        if (other.rigidBodyObject && other.rigidBodyObject.name === "terrain") {
+          inTheAir.current = true;
+        }
+      }}
     >
       <group ref={container}>
         <group ref={cameraTarget} position-z={-4} />
-        <group ref={cameraPosition} position-y={10} position-z={-16} />
+        <group ref={cameraPosition} position-y={14} position-z={-24} />
         <group ref={character}>
           <Character state={state} />
         </group>
