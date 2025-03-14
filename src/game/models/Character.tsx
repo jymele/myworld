@@ -31,17 +31,26 @@ export function Character(props: Props) {
   const { actions } = useAnimations<THREE.AnimationClip>(animations, group);
   const { state } = props;
 
+  const stopAllAnimations = () => {
+    actions.Idle?.stop();
+    actions.Walk?.stop();
+    actions.Jump?.stop();
+  };
+
   useEffect(() => {
     // Check if all animations are present
     if (!actions.Idle || !actions.Walk) {
       console.error("Missing animations");
     } else {
       if (state === "Idle") {
-        actions.Walk.stop();
+        stopAllAnimations();
         actions.Idle.play();
       } else if (state === "Walk") {
-        actions.Idle.stop();
+        stopAllAnimations();
         actions.Walk.play().setDuration(0.5);
+      } else if (state === "Jump") {
+        stopAllAnimations();
+        actions.Jump?.play();
       }
     }
   }, [state]);

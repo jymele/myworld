@@ -4,7 +4,7 @@ import {
   RapierRigidBody,
 } from "@react-three/rapier";
 import { useFrame } from "@react-three/fiber";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useKeyboardControls } from "@react-three/drei";
 import { Group, Vector3 } from "three";
 import Controls from "../utils/controls";
@@ -26,11 +26,17 @@ PlayerController.defaultProps = {
 export default function PlayerController(props: Props) {
   const [state, setState] = useState<PlayerActions>("Idle");
 
+  useEffect(() => {
+    if (rb.current) {
+      rb.current.addForce(new Vector3(0, -12, 0), true);
+    }
+  }, []);
+
   const { WALK_SPEED, RUN_SPEED, ROTATION_SPEED, JUMP_FORCE } = useControls(
     "Character Control",
     {
-      WALK_SPEED: { value: 10, min: 0, max: 100 },
-      RUN_SPEED: { value: 20, min: 0, max: 100 },
+      WALK_SPEED: { value: 8, min: 0, max: 100 },
+      RUN_SPEED: { value: 16, min: 0, max: 100 },
       ROTATION_SPEED: {
         value: degToRad(2),
         min: degToRad(0.1),
@@ -40,6 +46,7 @@ export default function PlayerController(props: Props) {
       JUMP_FORCE: { value: 8, min: 0, max: 10, step: 0.5 },
     }
   );
+  const fall_reset = -20;
 
   const gameover: boolean = props.gameover;
   const inTheAir = useRef(false);
@@ -141,8 +148,21 @@ export default function PlayerController(props: Props) {
     }
   };
 
+  const resetPlayer = () => {
+    rb.current?.setTranslation(new Vector3(0, 5, 0), true);
+    rb.current?.setLinvel(new Vector3(0, 0, 0), true);
+    rb.current?.setAngvel(new Vector3(0, 0, 0), true);
+  };
+
   useFrame(({ camera }) => {
     handleCamera(camera as PerspectiveCamera);
+
+    /**
+     * Check if the player has fallen of the map
+     */
+    if (rb.current && rb.current.translation().y < fall_reset) {
+      resetPlayer();
+    }
 
     /**
      * Handling the Player Movement
