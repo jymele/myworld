@@ -1,6 +1,6 @@
-import { CapsuleCollider, RigidBody, useRapier } from "@react-three/rapier";
+import { CapsuleCollider, RigidBody } from "@react-three/rapier";
 import { useFrame } from "@react-three/fiber";
-import { use, useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useKeyboardControls } from "@react-three/drei";
 import { Group, Vector3 } from "three";
 import Controls from "../utils/controls";
@@ -9,7 +9,6 @@ import { degToRad, MathUtils } from "three/src/math/MathUtils.js";
 import { lerpAngle } from "../utils/AngleHelpers";
 import { Character } from "../models/Character";
 import { PerspectiveCamera } from "three";
-import * as RAPIER from "@dimforge/rapier3d-compat";
 
 type Props = {
   gameover: boolean;
@@ -54,31 +53,9 @@ export default function PlayerController(props: Props) {
 
   const [, get] = useKeyboardControls<Controls>();
 
-  const { world } = useRapier();
-
-  const isGrounded = () => {
-    // let ray = new RAPIER.Ray(
-    //   rb.current!.translation(),
-    //   new RAPIER.Vector3(0, -1, 0)
-    // );
-    // let maxToi = 0.4;
-    // let solid = true;
-    // let hit = world.castRay(ray, maxToi, solid);
-    // if (hit != null) {
-    //   // The first collider hit has the handle `hit.colliderHandle` and it hit after
-    //   // the ray travelled a distance equal to `ray.dir * toi`.
-    //   let hitPoint = ray.pointAt(hit.timeOfImpact); // Same as: `ray.origin + ray.dir * toi`
-    //   // console.log("Collider", hit.collider, "hit at point", hitPoint);
-    //   inTheAir.current = false;
-    // } else {
-    //   inTheAir.current = true;
-    // }
-  };
-
   const handleJump = (vel: Vector3) => {
     const { jump } = get();
-    // Handle the Jump
-    // if (jump) {
+
     if (jump && !inTheAir.current) {
       inTheAir.current = true;
       vel.y = JUMP_FORCE;
@@ -165,10 +142,8 @@ export default function PlayerController(props: Props) {
     /**
      * Handling the Player Movement
      */
-    if (rb.current && !gameover) {
+    if (rb.current && !gameover && !inTheAir.current) {
       const vel = rb.current.linvel();
-
-      isGrounded();
 
       handleMovement(vel);
       handleJump(vel);
@@ -184,7 +159,11 @@ export default function PlayerController(props: Props) {
       colliders={false}
       position={[0, 5, 0]}
       lockRotations
-      // collisionGroups={0b0001}
+      onCollisionEnter={({ other }) => {
+        if (other.rigidBodyObject && other.rigidBodyObject.name === "terrain") {
+          inTheAir.current = false;
+        }
+      }}
     >
       <group ref={container}>
         <group ref={cameraTarget} position-z={-4} />
