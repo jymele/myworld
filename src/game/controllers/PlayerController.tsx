@@ -26,15 +26,8 @@ PlayerController.defaultProps = {
 export default function PlayerController(props: Props) {
   const [state, setState] = useState<PlayerActions>("Idle");
 
-  useEffect(() => {
-    if (rb.current) {
-      rb.current.addForce(new Vector3(0, -12, 0), true);
-    }
-  }, []);
-
-  const { WALK_SPEED, RUN_SPEED, ROTATION_SPEED, JUMP_FORCE } = useControls(
-    "Character Control",
-    {
+  const { WALK_SPEED, RUN_SPEED, ROTATION_SPEED, JUMP_FORCE, GRAVITY } =
+    useControls("Character Control", {
       WALK_SPEED: { value: 8, min: 0, max: 100 },
       RUN_SPEED: { value: 16, min: 0, max: 100 },
       ROTATION_SPEED: {
@@ -44,8 +37,8 @@ export default function PlayerController(props: Props) {
         step: degToRad(0.1),
       },
       JUMP_FORCE: { value: 8, min: 0, max: 10, step: 0.5 },
-    }
-  );
+      GRAVITY: { value: 30, min: 0, max: 100 },
+    });
   const fall_reset = -20;
 
   const gameover: boolean = props.gameover;
@@ -63,6 +56,12 @@ export default function PlayerController(props: Props) {
   const cameraLookAt = useRef<Vector3>(new Vector3());
 
   const [, get] = useKeyboardControls<Controls>();
+
+  useEffect(() => {
+    if (rb.current) {
+      rb.current.addForce(new Vector3(0, -GRAVITY, 0), true);
+    }
+  }, []);
 
   const handleJump = (vel: Vector3) => {
     const { jump } = get();
