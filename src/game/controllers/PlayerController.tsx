@@ -166,7 +166,7 @@ export default function PlayerController(props: Props) {
     /**
      * Handling the Player Movement
      */
-    if (rb.current && !gameover && !inTheAir.current) {
+    if (rb.current && !gameover) {
       const vel = rb.current.linvel() as Vector3;
 
       handleMovement(vel);
