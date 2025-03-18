@@ -9,12 +9,12 @@ import { GLTF } from "three-stdlib";
 
 type GLTFResult = GLTF & {
   nodes: {
-    Cube_1: THREE.Mesh;
-    Cube_2: THREE.Mesh;
+    Cube: THREE.Mesh;
+    Cube002: THREE.Mesh;
     Cube001: THREE.Mesh;
+    Cylinder003: THREE.Mesh;
   };
   materials: {
-    Material: THREE.MeshStandardMaterial;
     ["Material.002"]: THREE.MeshStandardMaterial;
   };
 };
@@ -26,22 +26,28 @@ export function TerrainWorld(props: JSX.IntrinsicElements["group"]) {
       <mesh
         castShadow
         receiveShadow
+        geometry={nodes.Cube.geometry}
+        material={materials["Material.002"]}
+      />
+      <mesh
+        castShadow
+        receiveShadow
+        geometry={nodes.Cube002.geometry}
+        material={materials["Material.002"]}
+        position={[-1.055, 0, 0]}
+      />
+      <mesh
+        castShadow
+        receiveShadow
         geometry={nodes.Cube001.geometry}
         material={nodes.Cube001.material}
-        position={[0, 0.325, 0]}
-        scale={[1.7, 1, 1.7]}
       />
       <mesh
         castShadow
         receiveShadow
-        geometry={nodes.Cube_1.geometry}
-        material={materials.Material}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes.Cube_2.geometry}
-        material={materials["Material.002"]}
+        geometry={nodes.Cylinder003.geometry}
+        material={nodes.Cylinder003.material}
+        position={[0, 0, 39]}
       />
     </group>
   );

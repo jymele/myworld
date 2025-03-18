@@ -1,8 +1,5 @@
 import { RigidBody } from "@react-three/rapier";
-import Terrain from "../models/environment/Terrain";
-import { Box } from "@react-three/drei";
-import { Land1 } from "../models/Land1";
-import { TerrainWorld } from "../models/TerrainWorld";
+import { TerrainWorld } from "../models/environment/TerrainWorld";
 
 export default function TerrainController() {
   return (
